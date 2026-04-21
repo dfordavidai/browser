@@ -29,7 +29,7 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{height:100%;overflow:hidden;}
-body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100vh;}
+body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100vh;cursor:default;}
 
 /* ── TITLEBAR ── */
 #titlebar{height:36px;background:var(--chrome);display:flex;align-items:center;padding:0 12px;gap:0;border-bottom:1px solid var(--border);flex-shrink:0;-webkit-app-region:drag;}
@@ -47,11 +47,13 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
 /* ── TABBAR ── */
 #tabbar{height:var(--tab-h);background:var(--chrome);display:flex;align-items:flex-end;padding:0 8px;gap:1px;border-bottom:1px solid var(--border);overflow-x:auto;overflow-y:hidden;scrollbar-width:none;flex-shrink:0;}
 #tabbar::-webkit-scrollbar{display:none;}
-.tab{display:flex;align-items:center;gap:6px;padding:0 11px;height:29px;min-width:100px;max-width:210px;border-radius:6px 6px 0 0;cursor:pointer;position:relative;font-size:11.5px;font-weight:500;color:var(--text3);transition:color .15s,background .15s;flex-shrink:0;border:1px solid transparent;border-bottom:none;user-select:none;}
+.tab{display:flex;align-items:center;gap:6px;padding:0 11px;height:29px;min-width:120px;max-width:210px;border-radius:6px 6px 0 0;cursor:pointer;position:relative;font-size:11.5px;font-weight:500;color:var(--text3);transition:color .15s,background .15s;flex-shrink:0;border:1px solid transparent;border-bottom:none;user-select:none;}
 .tab:hover:not(.active){background:var(--chrome2);color:var(--text2);}
 .tab.active{background:var(--bg);border-color:var(--border);color:var(--text);}
 .tab.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:var(--bg);}
-.tab-fav{font-size:11px;flex-shrink:0;width:14px;text-align:center;}
+.tab-fav{width:14px;height:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.tab-fav img{width:14px;height:14px;object-fit:contain;border-radius:2px;}
+.tab-fav svg{width:12px;height:12px;opacity:.5;}
 .tab-title{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:'JetBrains Mono',monospace;font-size:10.5px;}
 .tab-x{width:15px;height:15px;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--text3);transition:all .12s;flex-shrink:0;opacity:0;}
 .tab:hover .tab-x,.tab.active .tab-x{opacity:1;}
@@ -65,6 +67,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
 #bkbar.show{display:flex;}
 .bk-item{display:flex;align-items:center;gap:5px;padding:2px 8px;border-radius:5px;font-size:11.5px;color:var(--text2);cursor:pointer;white-space:nowrap;transition:all .12s;}
 .bk-item:hover{background:var(--chrome3);color:var(--text);}
+.bk-fav{width:13px;height:13px;object-fit:contain;}
 
 /* ── NAVBAR ── */
 #navbar{height:var(--nav-h);background:var(--chrome2);display:flex;align-items:center;padding:0 10px;gap:4px;border-bottom:1px solid var(--border);flex-shrink:0;}
@@ -76,10 +79,13 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
 
 /* Omnibox */
 #omni-wrap{flex:1;position:relative;display:flex;align-items:center;}
-#omni-lock{position:absolute;left:11px;font-size:13px;pointer-events:none;z-index:1;transition:color .2s;}
-#omni-lock.globe{color:var(--text3);}
-#omni-lock.secure{color:var(--green);}
-#omni-lock.warn{color:var(--yellow);}
+#omni-lock{position:absolute;left:10px;display:flex;align-items:center;pointer-events:none;z-index:1;}
+#omni-lock svg{width:13px;height:13px;}
+#omni-lock.globe svg{color:var(--text3);}
+#omni-lock.secure svg{color:var(--green);}
+#omni-lock.warn svg{color:var(--yellow);}
+/* Favicon in omnibox */
+#omni-favicon{position:absolute;left:10px;width:15px;height:15px;object-fit:contain;border-radius:2px;pointer-events:none;z-index:1;display:none;}
 #omni{width:100%;height:32px;background:var(--chrome3);border:1.5px solid var(--border);border-radius:var(--radius);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;padding:0 110px 0 32px;outline:none;transition:all .2s;}
 #omni:focus{background:var(--panel);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-dim);}
 #omni::placeholder{color:var(--text3);}
@@ -97,7 +103,8 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
 .sug-lbl{font-size:9.5px;font-weight:700;color:var(--text3);padding:6px 14px 2px;text-transform:uppercase;letter-spacing:.08em;}
 .sug-row{display:flex;align-items:center;gap:10px;padding:7px 14px;cursor:pointer;transition:background .1s;font-size:12.5px;}
 .sug-row:hover,.sug-row.sel{background:var(--chrome3);}
-.sug-ico{font-size:13px;flex-shrink:0;width:18px;text-align:center;}
+.sug-ico{font-size:13px;flex-shrink:0;width:18px;height:16px;text-align:center;display:flex;align-items:center;justify-content:center;}
+.sug-ico img{width:14px;height:14px;object-fit:contain;}
 .sug-main{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .sug-sub{font-size:10.5px;color:var(--text3);font-family:'JetBrains Mono',monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:180px;}
 
@@ -108,16 +115,22 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
 #content{flex:1;position:relative;overflow:hidden;display:flex;flex-direction:column;background:var(--bg);}
 #progress{height:3px;background:linear-gradient(90deg,var(--accent),#818cf8,#a78bfa);width:0%;opacity:0;transition:width .18s ease,opacity .35s;position:absolute;top:0;left:0;right:0;z-index:200;box-shadow:0 0 10px rgba(59,130,246,.6);}
 
-/* Screenshot */
-#view-wrap{flex:1;position:relative;overflow:hidden;display:none;background:#1a1a2e;}
-#view-img{width:100%;height:auto;display:block;cursor:crosshair;transform-origin:top left;}
-#cursor-ring{position:absolute;width:20px;height:20px;border-radius:50%;border:2px solid var(--accent);background:rgba(59,130,246,.08);pointer-events:none;transform:translate(-50%,-50%);display:none;z-index:80;}
+/* Screenshot — cursor is default (OS arrow), the browser handles it */
+#view-wrap{flex:1;position:relative;overflow:hidden;display:none;background:#fff;}
+#view-img{width:100%;height:auto;display:block;cursor:default;transform-origin:top left;user-select:none;}
+#view-img.typing-mode{cursor:text;}
+#view-img.loading-mode{cursor:wait;}
 
-/* Load overlay */
-#load-ov{position:absolute;inset:0;background:rgba(12,13,18,.8);backdrop-filter:blur(6px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:160;}
+/* Load overlay — only for navigations */
+#load-ov{position:absolute;inset:0;background:rgba(12,13,18,.75);backdrop-filter:blur(4px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:160;}
 #load-ov.show{display:flex;}
-.spinner{width:38px;height:38px;border:2.5px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;}
+.spinner{width:36px;height:36px;border:2.5px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite;}
 #load-txt{font-size:12px;color:var(--text2);font-family:'JetBrains Mono',monospace;max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* Click flash — subtle, non-blocking */
+#click-flash{position:absolute;border-radius:50%;background:rgba(59,130,246,.28);pointer-events:none;transform:translate(-50%,-50%) scale(0);z-index:90;width:24px;height:24px;display:none;}
+#click-flash.pop{display:block;animation:clickpop .3s ease-out forwards;}
+@keyframes clickpop{0%{transform:translate(-50%,-50%) scale(0);opacity:1;}100%{transform:translate(-50%,-50%) scale(2.8);opacity:0;}}
 
 /* Error page */
 #err-pg{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:var(--bg);z-index:130;}
@@ -161,7 +174,9 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
 @media(max-width:520px){.qa-grid{grid-template-columns:repeat(4,1fr);}}
 .qa-item{display:flex;flex-direction:column;align-items:center;gap:7px;padding:12px 6px 10px;background:var(--chrome2);border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:all .18s;}
 .qa-item:hover{background:var(--chrome3);border-color:var(--border2);transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.25);}
-.qa-ico{font-size:20px;}
+.qa-ico{width:24px;height:24px;display:flex;align-items:center;justify-content:center;}
+.qa-ico img{width:22px;height:22px;object-fit:contain;}
+.qa-ico-fallback{font-size:20px;}
 .qa-lbl{font-size:10.5px;color:var(--text2);font-weight:500;}
 
 /* Typing bar */
@@ -196,7 +211,8 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
 .p-sec-label{font-size:9.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.09em;padding:6px 4px 4px;margin-top:4px;}
 .p-row{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:var(--radius);cursor:pointer;transition:background .12s;}
 .p-row:hover{background:var(--chrome3);}
-.p-row-ico{font-size:14px;flex-shrink:0;}
+.p-row-ico{width:18px;height:18px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.p-row-ico img{width:14px;height:14px;object-fit:contain;border-radius:2px;}
 .p-row-info{flex:1;overflow:hidden;}
 .p-row-title{font-size:12.5px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .p-row-url{font-size:10.5px;color:var(--text3);font-family:'JetBrains Mono',monospace;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -214,7 +230,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
 .s-btn{width:100%;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);padding:9px;font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;cursor:pointer;transition:opacity .15s;margin-top:6px;}
 .s-btn:hover{opacity:.85;}
 .s-btn.ghost{background:var(--chrome3);color:var(--text2);border:1px solid var(--border2);}
-.s-row{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius);transition:background .12s;}
+.s-row{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:var(--radius);transition:background .12s;cursor:default;}
 .s-row:hover{background:var(--chrome3);}
 .s-row-ico{font-size:17px;flex-shrink:0;width:26px;text-align:center;}
 .s-row-info{flex:1;}
@@ -302,7 +318,12 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
   </button>
 
   <div id="omni-wrap">
-    <span id="omni-lock" class="globe">🌐</span>
+    <!-- Shown when focused (no favicon): SVG lock/globe icon -->
+    <span id="omni-lock" class="globe">
+      <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 1.5C8 1.5 5.5 4 5.5 8S8 14.5 8 14.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 1.5c0 0 2.5 2.5 2.5 6.5S8 14.5 8 14.5" stroke="currentColor" stroke-width="1.2" opacity=".5"/><path d="M1.5 8h13M2 5.5h12M2 10.5h12" stroke="currentColor" stroke-width="1.2" opacity=".6"/></svg>
+    </span>
+    <!-- Shown when not focused: real favicon -->
+    <img id="omni-favicon" src="" alt="">
     <input id="omni" placeholder="Search Google or enter address" autocomplete="off" spellcheck="false">
     <div id="omni-right">
       <button class="omni-btn" id="btn-bk" title="Bookmark this page (Ctrl+D)">☆</button>
@@ -355,7 +376,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
   <!-- Screenshot view -->
   <div id="view-wrap">
     <img id="view-img" alt="page" draggable="false">
-    <div id="cursor-ring"></div>
+    <div id="click-flash"></div>
     <div id="load-ov">
       <div class="spinner"></div>
       <div id="load-txt">Loading…</div>
@@ -384,7 +405,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
 <!-- Typing bar -->
 <div id="typing-bar">
   <div class="tp-dots"><span></span><span></span><span></span></div>
-  Keyboard input active — typing directly to page &nbsp;·&nbsp; <b style="color:#fff">Esc</b> to exit &nbsp;·&nbsp; <b style="color:#fff">Tab</b> for next field
+  Typing mode active &nbsp;·&nbsp; <b style="color:#fff">Esc</b> to exit
 </div>
 
 <!-- Status bar -->
@@ -471,53 +492,77 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
 <div class="notif" id="notif"></div>
 
 <script>
+// ═══ FAVICON CACHE ════════════════════════════════════════════════════════════
+const faviconCache = {};
+function getFavicon(url) {
+  if (!url) return null;
+  try {
+    const origin = new URL(url).origin;
+    if (faviconCache[origin] !== undefined) return faviconCache[origin];
+    // Use Google's favicon service — reliable, cached, 16px
+    const furl = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(origin)}&sz=32`;
+    faviconCache[origin] = furl;
+    return furl;
+  } catch { return null; }
+}
+
+function faviconImg(url, cls='') {
+  const f = getFavicon(url);
+  if (!f) return globeSVG();
+  return `<img src="${f}" class="${cls}" onerror="this.style.display='none';this.nextSibling&&(this.nextSibling.style.display='')" loading="lazy">`;
+}
+
+function globeSVG() {
+  return `<svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:12px;height:12px;color:var(--text3)"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/><path d="M8 1.5C8 1.5 5.5 4 5.5 8S8 14.5 8 14.5" stroke="currentColor" stroke-width="1.2"/><path d="M8 1.5c0 0 2.5 2.5 2.5 6.5S8 14.5 8 14.5" stroke="currentColor" stroke-width="1.2" opacity=".5"/><path d="M1.5 8h13M2 5.5h12M2 10.5h12" stroke="currentColor" stroke-width="1.2" opacity=".6"/></svg>`;
+}
+
 // ═══ CONFIG ═══════════════════════════════════════════════════════════════════
 const QUICK = [
-  {ico:'🔍',lbl:'Google',url:'https://google.com'},
-  {ico:'▶',lbl:'YouTube',url:'https://youtube.com'},
-  {ico:'𝕏',lbl:'Twitter',url:'https://twitter.com'},
-  {ico:'📘',lbl:'Facebook',url:'https://facebook.com'},
-  {ico:'💼',lbl:'LinkedIn',url:'https://linkedin.com'},
-  {ico:'🛒',lbl:'Amazon',url:'https://amazon.com'},
-  {ico:'📰',lbl:'Reddit',url:'https://reddit.com'},
-  {ico:'🐙',lbl:'GitHub',url:'https://github.com'},
-  {ico:'📧',lbl:'Gmail',url:'https://mail.google.com'},
-  {ico:'🗺',lbl:'Maps',url:'https://maps.google.com'},
-  {ico:'📸',lbl:'Instagram',url:'https://instagram.com'},
-  {ico:'🎵',lbl:'Spotify',url:'https://open.spotify.com'},
+  {lbl:'Google',   url:'https://google.com'},
+  {lbl:'YouTube',  url:'https://youtube.com'},
+  {lbl:'Twitter',  url:'https://twitter.com'},
+  {lbl:'Facebook', url:'https://facebook.com'},
+  {lbl:'LinkedIn', url:'https://linkedin.com'},
+  {lbl:'Amazon',   url:'https://amazon.com'},
+  {lbl:'Reddit',   url:'https://reddit.com'},
+  {lbl:'GitHub',   url:'https://github.com'},
+  {lbl:'Gmail',    url:'https://mail.google.com'},
+  {lbl:'Maps',     url:'https://maps.google.com'},
+  {lbl:'Instagram',url:'https://instagram.com'},
+  {lbl:'Spotify',  url:'https://open.spotify.com'},
 ];
 const SUGS = [
-  {ico:'🔍',lbl:'Google',url:'https://google.com'},
-  {ico:'▶',lbl:'YouTube',url:'https://youtube.com'},
-  {ico:'𝕏',lbl:'Twitter / X',url:'https://twitter.com'},
-  {ico:'📘',lbl:'Facebook',url:'https://facebook.com'},
-  {ico:'💼',lbl:'LinkedIn',url:'https://linkedin.com'},
-  {ico:'🛒',lbl:'Amazon',url:'https://amazon.com'},
-  {ico:'📰',lbl:'Reddit',url:'https://reddit.com'},
-  {ico:'🐙',lbl:'GitHub',url:'https://github.com'},
-  {ico:'📧',lbl:'Gmail',url:'https://mail.google.com'},
-  {ico:'🗺',lbl:'Google Maps',url:'https://maps.google.com'},
-  {ico:'📸',lbl:'Instagram',url:'https://instagram.com'},
-  {ico:'🎵',lbl:'Spotify',url:'https://open.spotify.com'},
-  {ico:'📺',lbl:'Netflix',url:'https://netflix.com'},
-  {ico:'🎮',lbl:'Twitch',url:'https://twitch.tv'},
-  {ico:'🧑‍💻',lbl:'Stack Overflow',url:'https://stackoverflow.com'},
-  {ico:'🌐',lbl:'Wikipedia',url:'https://wikipedia.org'},
-  {ico:'📦',lbl:'Notion',url:'https://notion.so'},
-  {ico:'🐦',lbl:'Discord',url:'https://discord.com'},
-  {ico:'📌',lbl:'Pinterest',url:'https://pinterest.com'},
-  {ico:'🛍',lbl:'eBay',url:'https://ebay.com'},
+  {lbl:'Google',       url:'https://google.com'},
+  {lbl:'YouTube',      url:'https://youtube.com'},
+  {lbl:'Twitter / X',  url:'https://twitter.com'},
+  {lbl:'Facebook',     url:'https://facebook.com'},
+  {lbl:'LinkedIn',     url:'https://linkedin.com'},
+  {lbl:'Amazon',       url:'https://amazon.com'},
+  {lbl:'Reddit',       url:'https://reddit.com'},
+  {lbl:'GitHub',       url:'https://github.com'},
+  {lbl:'Gmail',        url:'https://mail.google.com'},
+  {lbl:'Google Maps',  url:'https://maps.google.com'},
+  {lbl:'Instagram',    url:'https://instagram.com'},
+  {lbl:'Spotify',      url:'https://open.spotify.com'},
+  {lbl:'Netflix',      url:'https://netflix.com'},
+  {lbl:'Twitch',       url:'https://twitch.tv'},
+  {lbl:'Stack Overflow',url:'https://stackoverflow.com'},
+  {lbl:'Wikipedia',    url:'https://wikipedia.org'},
+  {lbl:'Notion',       url:'https://notion.so'},
+  {lbl:'Discord',      url:'https://discord.com'},
+  {lbl:'Pinterest',    url:'https://pinterest.com'},
+  {lbl:'eBay',         url:'https://ebay.com'},
 ];
 
 // ═══ STATE ════════════════════════════════════════════════════════════════════
-let BACKEND = localStorage.getItem('dave_be') || '';
-let SID     = localStorage.getItem('dave_sid') || mkSid();
-let tabs    = [{id:1,title:'New Tab',fav:'🌑',url:'',home:true}];
+let BACKEND  = localStorage.getItem('dave_be') || '';
+let SID      = localStorage.getItem('dave_sid') || mkSid();
+let tabs     = [{id:1,title:'New Tab',favicon:null,url:'',home:true}];
 let activeTab = 1, tabCtr = 1;
-let typing  = false;
-let zoom    = parseInt(localStorage.getItem('dave_zoom')||'100');
-let canBack = false, canFwd = false;
-let lastUrl = '';
+let typing   = false;
+let zoom     = parseInt(localStorage.getItem('dave_zoom')||'100');
+let canBack  = false, canFwd = false;
+let lastUrl  = '';
 let bookmarks = JSON.parse(localStorage.getItem('dave_bks')||'[]');
 let history   = JSON.parse(localStorage.getItem('dave_hist')||'[]');
 let progIv    = null, progVal = 0;
@@ -529,8 +574,9 @@ const $ = id => document.getElementById(id);
 const cfg=$('cfg'), cfgIn=$('cfg-in'), cfgOk=$('cfg-ok');
 const tabbar=$('tabbar'), newTabBtn=$('new-tab'), bkbar=$('bkbar');
 const omni=$('omni'), omniLock=$('omni-lock'), sugBox=$('sug-box');
+const omniFavicon=$('omni-favicon');
 const progress=$('progress'), home=$('home'), viewWrap=$('view-wrap');
-const viewImg=$('view-img'), cursorRing=$('cursor-ring');
+const viewImg=$('view-img'), clickFlash=$('click-flash');
 const loadOv=$('load-ov'), loadTxt=$('load-txt');
 const errPg=$('err-pg'), errMsg=$('err-msg'), errUrl=$('err-url');
 const zoomBadge=$('zoom-badge'), zoomDisplay=$('zoom-display');
@@ -557,12 +603,13 @@ function tickClock(){
   $('h-date').textContent  = n.toLocaleDateString('en-US',{weekday:'long',month:'long',day:'numeric'});
 }
 
-// ═══ QUICK ACCESS ═════════════════════════════════════════════════════════════
+// ═══ QUICK ACCESS — with real favicons ════════════════════════════════════════
 function buildQA(){
   const g=$('qa-grid'); g.innerHTML='';
   QUICK.forEach(q=>{
     const el=document.createElement('div'); el.className='qa-item';
-    el.innerHTML=`<div class="qa-ico">${q.ico}</div><div class="qa-lbl">${q.lbl}</div>`;
+    const fav=getFavicon(q.url);
+    el.innerHTML=`<div class="qa-ico"><img src="${fav}" alt="" onerror="this.outerHTML='<span class=qa-ico-fallback>🌐</span>'" loading="lazy"></div><div class="qa-lbl">${q.lbl}</div>`;
     el.onclick=()=>go(q.url); g.appendChild(el);
   });
 }
@@ -605,7 +652,8 @@ async function api(ep, body){
   return r.json();
 }
 
-function applyRes(d, silent=false){
+// ═══ APPLY RESULT — updates tab favicon, omnibox favicon, etc ═════════════════
+function applyRes(d){
   if(d.screenshot){
     viewImg.src='data:image/jpeg;base64,'+d.screenshot;
     showPage();
@@ -613,20 +661,47 @@ function applyRes(d, silent=false){
     errPg.classList.remove('show');
   }
   if(d.url){
-    const urlChanged = d.url !== lastUrl;
-    omni.value=d.url; lastUrl=d.url; setLock(d.url);
-    const tab=tabObj(); if(tab){tab.url=d.url;tab.home=false;}
+    omni.value=d.url; lastUrl=d.url;
+    setLock(d.url);
+    const tab=tabObj();
+    if(tab){ tab.url=d.url; tab.home=false; tab.favicon=getFavicon(d.url); }
     updateBkIcon(d.url);
-    addHist(d.title||d.url,d.url);
+    addHist(d.title||d.url, d.url);
+    // Update omnibox favicon
+    updateOmniFavicon(d.url);
   }
-  if(d.title){ const tab=tabObj(); if(tab){tab.title=d.title.length>24?d.title.slice(0,24)+'…':d.title;tab.fav='🌐';} document.title=d.title+' — Dave Browser'; }
+  if(d.title){
+    const tab=tabObj();
+    if(tab){ tab.title=d.title.length>24?d.title.slice(0,24)+'…':d.title; }
+    document.title=d.title+' — Dave Browser';
+  }
   canBack=!!d.canGoBack; canFwd=!!d.canGoForward;
   $('btn-back').disabled=!canBack; $('btn-fwd').disabled=!canFwd;
   renderTabs();
 }
 
+function updateOmniFavicon(url){
+  if(!url){ omniFavicon.style.display='none'; omniLock.style.display=''; return; }
+  const f=getFavicon(url);
+  if(f && !omni.matches(':focus')){
+    omniFavicon.src=f;
+    omniFavicon.style.display='block';
+    omniLock.style.display='none';
+  }
+}
+
+// Show favicon in omnibox when not focused, lock icon when focused
+omni.addEventListener('focus',()=>{
+  omniFavicon.style.display='none';
+  omniLock.style.display='';
+  omni.select();
+});
+omni.addEventListener('blur',()=>{
+  if(lastUrl){ updateOmniFavicon(lastUrl); }
+});
+
 function showPage(){ viewWrap.style.display='block'; home.style.display='none'; }
-function showHome(){ viewWrap.style.display='none'; home.style.display='flex'; omni.value=''; setLock(''); document.title='New Tab — Dave Browser'; }
+function showHome(){ viewWrap.style.display='none'; home.style.display='flex'; omni.value=''; setLock(''); omniFavicon.style.display='none'; omniLock.style.display=''; document.title='New Tab — Dave Browser'; }
 
 // ═══ NAVIGATE ════════════════════════════════════════════════════════════════
 async function go(raw){
@@ -637,6 +712,8 @@ async function go(raw){
   loadOv.classList.add('show'); loadTxt.textContent='Loading…';
   setStatus('loading','Loading…'); startProg();
   $('btn-ref').classList.add('spin');
+  // Show loading favicon placeholder
+  const tab=tabObj(); if(tab){tab.favicon=null; renderTabs();}
   try{
     const d=await api('/api/navigate',{url:raw});
     applyRes(d); endProg(); setStatus('ok',d.url||raw);
@@ -644,51 +721,46 @@ async function go(raw){
     endProg(); loadOv.classList.remove('show');
     errPg.classList.add('show'); errMsg.textContent=err.message; errUrl.textContent=raw;
     setStatus('err','Error: '+err.message);
-    const tab=tabObj(); if(tab){tab.title='Error';tab.fav='⚠️';renderTabs();}
+    const t=tabObj(); if(t){t.title='Error';t.favicon=null;renderTabs();}
   }finally{ $('btn-ref').classList.remove('spin'); }
 }
 
-// ═══ CLICK ════════════════════════════════════════════════════════════════════
+// ═══ CLICK — no blocking overlay, just flash ══════════════════════════════════
 viewImg.addEventListener('click', async e=>{
   if(!BACKEND) return;
   const rect=viewImg.getBoundingClientRect();
   const x=(e.clientX-rect.left)*(1440/rect.width);
   const y=(e.clientY-rect.top)*(900/rect.height);
 
-  // Enter typing mode
-  typing=true; typingBar.classList.add('show'); viewImg.style.cursor='text';
+  // Typing mode
+  typing=true; typingBar.classList.add('show');
+  viewImg.classList.add('typing-mode');
 
-  // Ripple only — no full blocking overlay for clicks
-  const r=document.createElement('div');
-  r.style.cssText=`position:absolute;width:18px;height:18px;border-radius:50%;background:rgba(59,130,246,.4);pointer-events:none;transform:translate(-50%,-50%) scale(0);animation:rpl .35s ease-out forwards;left:${e.clientX-rect.left}px;top:${e.clientY-rect.top}px;z-index:90;`;
-  viewWrap.appendChild(r); setTimeout(()=>r.remove(),400);
+  // Small click flash — not a full overlay
+  clickFlash.style.left=(e.clientX-rect.left)+'px';
+  clickFlash.style.top=(e.clientY-rect.top)+'px';
+  clickFlash.classList.remove('pop');
+  void clickFlash.offsetWidth; // reflow to restart animation
+  clickFlash.classList.add('pop');
 
-  // Dim the image slightly to signal "processing" — not a full overlay
-  viewImg.style.opacity='0.85';
+  viewImg.classList.add('loading-mode');
   setStatus('loading','');
-  startProg();
 
   try{
     const d=await api('/api/click',{x:Math.round(x),y:Math.round(y)});
-    applyRes(d); endProg(); setStatus('ok',d.url||lastUrl);
+    // If URL changed, show progress
+    if(d.url && d.url !== lastUrl){ startProg(); }
+    applyRes(d);
+    endProg();
+    setStatus('ok',d.url||lastUrl);
   }catch(err){
-    endProg(); setStatus('err',err.message);
+    setStatus('err',err.message);
   }finally{
-    viewImg.style.opacity='1';
+    viewImg.classList.remove('loading-mode');
   }
 });
 
-// cursor — no transition, raw position
-viewWrap.addEventListener('mousemove', e=>{
-  const rect=viewWrap.getBoundingClientRect();
-  cursorRing.style.left=(e.clientX-rect.left)+'px';
-  cursorRing.style.top=(e.clientY-rect.top)+'px';
-  cursorRing.style.display='block';
-});
-viewWrap.addEventListener('mouseleave',()=>cursorRing.style.display='none');
-
 // ═══ KEYBOARD — QUEUE BASED ═══════════════════════════════════════════════════
-// Instead of one API call per keystroke, we batch rapid typing into chunks
 let typeQueue=[], typeFlushing=false, typeTimer=null;
 
 async function flushTypeQueue(){
@@ -697,32 +769,27 @@ async function flushTypeQueue(){
   const batch=typeQueue.splice(0,typeQueue.length);
   try{
     let d;
-    for(const item of batch){
-      d=await api('/api/type', item);
-    }
+    for(const item of batch){ d=await api('/api/type',item); }
     if(d) applyRes(d);
   }catch(err){ setStatus('err',err.message); }
   typeFlushing=false;
-  // If more queued while we were flushing, flush again
   if(typeQueue.length) flushTypeQueue();
 }
 
 function queueKey(item){
   typeQueue.push(item);
   clearTimeout(typeTimer);
-  // Flush immediately for Enter/special keys, batch regular chars
   if(item.key){ flushTypeQueue(); }
-  else{ typeTimer=setTimeout(flushTypeQueue, 80); }
+  else{ typeTimer=setTimeout(flushTypeQueue,80); }
 }
 
 document.addEventListener('keydown', async e=>{
   const active=document.activeElement;
   const inInput=active===omni||active===$('h-search')||active===cfgIn||active===findInp||active===$('s-backend')||active===$('cfg-in');
-  // Global shortcuts
   if((e.ctrlKey||e.metaKey)&&!inInput){
     if(e.key==='t'){e.preventDefault();createTab();return;}
     if(e.key==='w'){e.preventDefault();closeTab(activeTab);return;}
-    if(e.key==='l'){e.preventDefault();omni.focus();omni.select();return;}
+    if(e.key==='l'){e.preventDefault();omni.focus();return;}
     if(e.key==='r'){e.preventDefault();doRefresh();return;}
     if(e.key==='f'){e.preventDefault();toggleFind();return;}
     if(e.key==='d'){e.preventDefault();toggleBk();return;}
@@ -744,7 +811,12 @@ document.addEventListener('keydown', async e=>{
   if(!key&&!text) return;
   queueKey(key?{key}:{text});
 });
-function exitTyping(){ typing=false; typingBar.classList.remove('show'); viewImg.style.cursor='crosshair'; typeQueue=[]; }
+function exitTyping(){
+  typing=false;
+  typingBar.classList.remove('show');
+  viewImg.classList.remove('typing-mode');
+  typeQueue=[];
+}
 
 // ═══ SCROLL — THROTTLED ════════════════════════════════════════════════════════
 let scrollPending=false, scrollAccum=0;
@@ -780,7 +852,7 @@ async function doRefresh(){
   finally{ $('btn-ref').classList.remove('spin'); }
 }
 $('btn-back').onclick=doBack; $('btn-fwd').onclick=doFwd; $('btn-ref').onclick=doRefresh;
-$('btn-home').onclick=()=>{ showHome(); const t=tabObj(); if(t){t.home=true;t.title='New Tab';t.fav='🌑';t.url='';renderTabs();} exitTyping(); };
+$('btn-home').onclick=()=>{ showHome(); const t=tabObj(); if(t){t.home=true;t.title='New Tab';t.favicon=null;t.url='';renderTabs();} exitTyping(); };
 $('btn-retry').onclick=()=>{ if(lastUrl)go(lastUrl); };
 
 // ═══ OMNIBOX ══════════════════════════════════════════════════════════════════
@@ -797,17 +869,32 @@ omni.addEventListener('input',()=>{
   const hm=history.filter(h=>h.title.toLowerCase().includes(q)||h.url.toLowerCase().includes(q)).slice(0,3);
   const sm=SUGS.filter(s=>s.lbl.toLowerCase().includes(q)||s.url.includes(q)).slice(0,5);
   let html='';
-  if(hm.length){ html+=`<div class="sug-sec"><div class="sug-lbl">Recent</div>`; hm.forEach(h=>{ html+=`<div class="sug-row" data-url="${h.url}"><span class="sug-ico">🕐</span><span class="sug-main">${h.title}</span><span class="sug-sub">${h.url.replace('https://','').slice(0,38)}</span></div>`; }); html+='</div>'; }
-  if(sm.length){ html+=`<div class="sug-sec"><div class="sug-lbl">Sites</div>`; sm.forEach(s=>{ html+=`<div class="sug-row" data-url="${s.url}"><span class="sug-ico">${s.ico}</span><span class="sug-main">${s.lbl}</span><span class="sug-sub">${s.url.replace('https://','')}</span></div>`; }); html+='</div>'; }
-  if(/[\w.-]+\.\w{2,}/.test(q)&&!q.includes(' ')){ html+=`<div class="sug-sec"><div class="sug-row" data-url="https://${q}"><span class="sug-ico">🌐</span><span class="sug-main">Go to ${q}</span></div></div>`; }
-  html+=`<div class="sug-sec"><div class="sug-row" data-url="https://google.com/search?q=${encodeURIComponent(q)}"><span class="sug-ico">🔍</span><span class="sug-main">Search: <b>${q}</b></span></div></div>`;
+  if(hm.length){
+    html+=`<div class="sug-sec"><div class="sug-lbl">Recent</div>`;
+    hm.forEach(h=>{
+      const fav=getFavicon(h.url);
+      html+=`<div class="sug-row" data-url="${h.url}"><span class="sug-ico"><img src="${fav}" onerror="this.outerHTML='🕐'" loading="lazy"></span><span class="sug-main">${h.title}</span><span class="sug-sub">${h.url.replace('https://','').slice(0,38)}</span></div>`;
+    });
+    html+='</div>';
+  }
+  if(sm.length){
+    html+=`<div class="sug-sec"><div class="sug-lbl">Sites</div>`;
+    sm.forEach(s=>{
+      const fav=getFavicon(s.url);
+      html+=`<div class="sug-row" data-url="${s.url}"><span class="sug-ico"><img src="${fav}" onerror="this.outerHTML='🌐'" loading="lazy"></span><span class="sug-main">${s.lbl}</span><span class="sug-sub">${s.url.replace('https://','')}</span></div>`;
+    });
+    html+='</div>';
+  }
+  if(/[\w.-]+\.\w{2,}/.test(q)&&!q.includes(' ')){
+    html+=`<div class="sug-sec"><div class="sug-row" data-url="https://${q}"><span class="sug-ico">🌐</span><span class="sug-main">Go to ${q}</span></div></div>`;
+  }
+  html+=`<div class="sug-sec"><div class="sug-row" data-url="https://google.com/search?q=${encodeURIComponent(q)}"><span class="sug-ico"><img src="${getFavicon('https://google.com')}" onerror="this.outerHTML='🔍'" loading="lazy"></span><span class="sug-main">Search: <b>${q}</b></span></div></div>`;
   sugBox.innerHTML=html;
   sugBox.querySelectorAll('.sug-row').forEach(el=>{ el.onclick=()=>{ go(el.dataset.url); sugBox.classList.remove('show'); }; });
   const rect=omni.getBoundingClientRect();
   sugBox.style.left=rect.left+'px'; sugBox.style.top=(rect.bottom+3)+'px'; sugBox.style.width=rect.width+'px';
   sugBox.classList.add('show');
 });
-omni.addEventListener('focus',()=>omni.select());
 document.addEventListener('click',e=>{ if(!e.target.closest('#omni-wrap')&&!e.target.closest('#sug-box')) sugBox.classList.remove('show'); hideCtx(); });
 
 // Home search
@@ -816,9 +903,9 @@ $('h-search-go').onclick=()=>go($('h-search').value);
 
 // ═══ LOCK ICON ═════════════════════════════════════════════════════════════════
 function setLock(url){
-  if(!url){omniLock.textContent='🌐';omniLock.className='globe';}
-  else if(url.startsWith('https')){omniLock.textContent='🔒';omniLock.className='secure';}
-  else{omniLock.textContent='⚠';omniLock.className='warn';}
+  if(!url){ omniLock.className='globe'; }
+  else if(url.startsWith('https')){ omniLock.className='secure'; }
+  else{ omniLock.className='warn'; }
 }
 
 // ═══ ZOOM ═════════════════════════════════════════════════════════════════════
@@ -839,7 +926,7 @@ function toggleBk(){
   if(!lastUrl) return;
   const idx=bookmarks.findIndex(b=>b.url===lastUrl), tab=tabObj();
   if(idx>-1){ bookmarks.splice(idx,1); $('btn-bk').textContent='☆'; $('btn-bk').classList.remove('on'); toast('Bookmark removed'); }
-  else{ bookmarks.push({title:tab?.title||lastUrl,url:lastUrl,time:Date.now()}); $('btn-bk').textContent='★'; $('btn-bk').classList.add('on'); toast('✓ Bookmarked'); }
+  else{ bookmarks.push({title:tab?.title||lastUrl,url:lastUrl,favicon:getFavicon(lastUrl),time:Date.now()}); $('btn-bk').textContent='★'; $('btn-bk').classList.add('on'); toast('✓ Bookmarked'); }
   localStorage.setItem('dave_bks',JSON.stringify(bookmarks));
   renderBkBar(); renderBkPanel();
 }
@@ -847,14 +934,19 @@ $('btn-bk').onclick=toggleBk;
 function updateBkIcon(url){ const has=bookmarks.some(b=>b.url===url); $('btn-bk').textContent=has?'★':'☆'; $('btn-bk').classList.toggle('on',has); }
 function renderBkBar(){
   bkbar.innerHTML='';
-  bookmarks.forEach(b=>{ const el=document.createElement('div'); el.className='bk-item'; el.textContent='🔖 '+(b.title.length>18?b.title.slice(0,18)+'…':b.title); el.title=b.url; el.onclick=()=>go(b.url); bkbar.appendChild(el); });
+  bookmarks.forEach(b=>{
+    const el=document.createElement('div'); el.className='bk-item';
+    const fav=getFavicon(b.url)||'';
+    el.innerHTML=`<img class="bk-fav" src="${fav}" onerror="this.style.display='none'" loading="lazy"><span>${(b.title.length>18?b.title.slice(0,18)+'…':b.title)}</span>`;
+    el.title=b.url; el.onclick=()=>go(b.url); bkbar.appendChild(el);
+  });
 }
 
 // ═══ HISTORY ═════════════════════════════════════════════════════════════════
 function addHist(title,url){
   if(!url) return;
   history=history.filter(h=>h.url!==url);
-  history.unshift({title:title||url,url,time:Date.now()});
+  history.unshift({title:title||url,url,favicon:getFavicon(url),time:Date.now()});
   if(history.length>300) history=history.slice(0,300);
   localStorage.setItem('dave_hist',JSON.stringify(history));
 }
@@ -874,7 +966,8 @@ function renderHistPanel(){
   pb.innerHTML='<div class="p-sec-label">Recent</div>';
   history.slice(0,60).forEach((h,i)=>{
     const el=document.createElement('div'); el.className='p-row';
-    el.innerHTML=`<div class="p-row-ico">🌐</div><div class="p-row-info"><div class="p-row-title">${h.title}</div><div class="p-row-url">${h.url.replace('https://','').slice(0,42)}</div></div><div class="p-row-time">${timeAgo(h.time)}</div><div class="p-row-del">✕</div>`;
+    const fav=getFavicon(h.url)||'';
+    el.innerHTML=`<div class="p-row-ico"><img src="${fav}" onerror="this.outerHTML='<svg viewBox=\\'0 0 16 16\\' fill=\\'none\\' style=\\'width:12px;height:12px;color:var(--text3)\\'><circle cx=\\'8\\' cy=\\'8\\' r=\\'6.5\\' stroke=\\'currentColor\\' stroke-width=\\'1.4\\'/></svg>'" loading="lazy"></div><div class="p-row-info"><div class="p-row-title">${h.title}</div><div class="p-row-url">${h.url.replace('https://','').slice(0,42)}</div></div><div class="p-row-time">${timeAgo(h.time)}</div><div class="p-row-del">✕</div>`;
     el.querySelector('.p-row-info').onclick=()=>go(h.url);
     el.querySelector('.p-row-del').onclick=e2=>{e2.stopPropagation();history.splice(i,1);localStorage.setItem('dave_hist',JSON.stringify(history));renderHistPanel();};
     pb.appendChild(el);
@@ -886,7 +979,8 @@ function renderBkPanel(){
   pb.innerHTML='<div class="p-sec-label">Bookmarks</div>';
   bookmarks.forEach((b,i)=>{
     const el=document.createElement('div'); el.className='p-row';
-    el.innerHTML=`<div class="p-row-ico">🔖</div><div class="p-row-info"><div class="p-row-title">${b.title}</div><div class="p-row-url">${b.url.replace('https://','').slice(0,42)}</div></div><div class="p-row-del">✕</div>`;
+    const fav=getFavicon(b.url)||'';
+    el.innerHTML=`<div class="p-row-ico"><img src="${fav}" onerror="this.style.display='none'" loading="lazy"></div><div class="p-row-info"><div class="p-row-title">${b.title}</div><div class="p-row-url">${b.url.replace('https://','').slice(0,42)}</div></div><div class="p-row-del">✕</div>`;
     el.querySelector('.p-row-info').onclick=()=>go(b.url);
     el.querySelector('.p-row-del').onclick=e2=>{e2.stopPropagation();bookmarks.splice(i,1);localStorage.setItem('dave_bks',JSON.stringify(bookmarks));renderBkBar();renderBkPanel();};
     pb.appendChild(el);
@@ -894,7 +988,7 @@ function renderBkPanel(){
 }
 
 // ═══ SETTINGS ════════════════════════════════════════════════════════════════
-$('s-backend-save').onclick=()=>{ const v=$('s-backend').value.trim().replace(/\/$/,''); if(!v)return; BACKEND=v; localStorage.setItem('dave_be',BACKEND); cfgIn.value=BACKEND; cfg.style.display='none'; toast('✓ Backend saved'); };
+$('s-backend-save').onclick=()=>{ const v=$('s-backend').value.trim().replace(/\/$/,''); if(!v)return; BACKEND=v; localStorage.setItem('dave_be',BACKEND); cfgIn.value=BACKEND; cfg.style.display='none'; toast('✓ Backend saved'); pingBE(); };
 $('s-new-sess').onclick=()=>{ SID=mkSid(); stSess.textContent=SID.slice(0,14)+'…'; $('s-sess-display').textContent=SID; toast('New session started'); };
 
 function setupToggles(){
@@ -908,13 +1002,12 @@ function setupTog(id,key,onFn,offFn){
   else{ if(el.classList.contains('on'))onFn(); else offFn(); }
   el.onclick=()=>{ el.classList.toggle('on'); const on=el.classList.contains('on'); localStorage.setItem(key,on?'1':'0'); on?onFn():offFn(); };
 }
-// bookmarks bar toggle is only in settings now
 
 // ═══ FIND ═════════════════════════════════════════════════════════════════════
 function toggleFind(){ const s=findBar.classList.contains('show'); if(s){findBar.classList.remove('show');findInp.value='';}else{findBar.classList.add('show');findInp.focus();} }
 $('find-cls').onclick=toggleFind; $('find-inp').addEventListener('keydown',e=>{ if(e.key==='Escape')toggleFind(); });
-$('find-prev').onclick=()=>toast('Use Ctrl+F then ↑↓ to navigate matches');
-$('find-next').onclick=()=>toast('Use Ctrl+F then ↑↓ to navigate matches');
+$('find-prev').onclick=()=>toast('Use Ctrl+F then ↑↓');
+$('find-next').onclick=()=>toast('Use Ctrl+F then ↑↓');
 
 // ═══ SCREENSHOT ═══════════════════════════════════════════════════════════════
 $('tb-shot').onclick=async(e)=>{
@@ -935,7 +1028,7 @@ viewWrap.addEventListener('contextmenu', e=>{
     {ico:'→',lbl:'Forward',fn:doFwd,dis:!canFwd},
     {ico:'↻',lbl:'Reload',fn:doRefresh},
     {sep:true},
-    {ico:'📋',lbl:'New Tab',fn:createTab},
+    {ico:'＋',lbl:'New Tab',fn:createTab},
     {ico:'🔖',lbl:'Bookmark Page',fn:toggleBk},
     {ico:'📷',lbl:'Screenshot',fn:()=>$('tb-shot').click()},
     {ico:'🔍',lbl:'Find in Page',fn:toggleFind},
@@ -948,7 +1041,7 @@ viewWrap.addEventListener('contextmenu', e=>{
     html+=`<div class="ctx-row${it.dis?' disabled':''}${it.danger?' danger':''}" data-i="${i}"><span class="ctx-ico">${it.ico}</span>${it.lbl}</div>`;
   });
   const ctx=$('ctx'); ctx.innerHTML=html; ctx.style.display='block';
-  let left=e.clientX, top=e.clientY; ctx.style.left=left+'px'; ctx.style.top=top+'px';
+  ctx.style.left=e.clientX+'px'; ctx.style.top=e.clientY+'px';
   const r=ctx.getBoundingClientRect();
   if(r.right>window.innerWidth) ctx.style.left=(e.clientX-r.width)+'px';
   if(r.bottom>window.innerHeight) ctx.style.top=(e.clientY-r.height)+'px';
@@ -958,7 +1051,7 @@ function hideCtx(){ $('ctx').style.display='none'; }
 
 // ═══ TABS ═════════════════════════════════════════════════════════════════════
 function tabObj(){ return tabs.find(t=>t.id===activeTab); }
-function createTab(){ tabCtr++; tabs.push({id:tabCtr,title:'New Tab',fav:'🌑',url:'',home:true}); switchTab(tabCtr); }
+function createTab(){ tabCtr++; tabs.push({id:tabCtr,title:'New Tab',favicon:null,url:'',home:true}); switchTab(tabCtr); }
 function closeTab(id,e){
   e&&e.stopPropagation(); if(tabs.length===1) return;
   const idx=tabs.findIndex(t=>t.id===id); tabs=tabs.filter(t=>t.id!==id);
@@ -966,7 +1059,7 @@ function closeTab(id,e){
 }
 function switchTab(id){
   activeTab=id; const tab=tabs.find(t=>t.id===id);
-  if(tab.home){showHome();}else{showPage();omni.value=tab.url||'';lastUrl=tab.url||'';setLock(tab.url||'');updateBkIcon(tab.url||'');}
+  if(tab.home){showHome();}else{showPage();omni.value=tab.url||'';lastUrl=tab.url||'';setLock(tab.url||'');updateBkIcon(tab.url||'');updateOmniFavicon(tab.url||'');}
   canBack=false; canFwd=false; $('btn-back').disabled=true; $('btn-fwd').disabled=true;
   renderTabs(); exitTyping();
 }
@@ -974,7 +1067,16 @@ function renderTabs(){
   document.querySelectorAll('.tab').forEach(el=>el.remove());
   tabs.forEach(tab=>{
     const el=document.createElement('div'); el.className='tab'+(tab.id===activeTab?' active':'');
-    el.innerHTML=`<span class="tab-fav">${tab.fav}</span><span class="tab-title">${tab.title}</span><span class="tab-x">✕</span>`;
+    // Favicon: real img if available, spinner if loading nav, globe if nothing
+    let favHtml;
+    if(tab.home){
+      favHtml=`<span style="font-size:10px;opacity:.4">●</span>`;
+    } else if(tab.favicon){
+      favHtml=`<img src="${tab.favicon}" width="14" height="14" style="border-radius:2px;object-fit:contain;" onerror="this.outerHTML='<svg viewBox=\\'0 0 16 16\\' fill=\\'none\\' style=\\'width:11px;height:11px;opacity:.5\\'><circle cx=\\'8\\' cy=\\'8\\' r=\\'6.5\\' stroke=\\'currentColor\\' stroke-width=\\'1.5\\'/></svg>'" loading="lazy">`;
+    } else {
+      favHtml=`<svg viewBox="0 0 16 16" fill="none" style="width:11px;height:11px;opacity:.35"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.5"/></svg>`;
+    }
+    el.innerHTML=`<div class="tab-fav">${favHtml}</div><span class="tab-title">${tab.title}</span><span class="tab-x">✕</span>`;
     el.onclick=()=>switchTab(tab.id); el.querySelector('.tab-x').onclick=e=>closeTab(tab.id,e);
     tabbar.insertBefore(el,newTabBtn);
   });
@@ -984,11 +1086,6 @@ newTabBtn.onclick=()=>createTab();
 // ═══ NOTIFICATIONS ════════════════════════════════════════════════════════════
 let ntTimeout;
 function toast(msg){ notif.textContent=msg; notif.classList.add('show'); clearTimeout(ntTimeout); ntTimeout=setTimeout(()=>notif.classList.remove('show'),2600); }
-
-// ═══ CSS KEYFRAME FOR RIPPLE ════════════════════════════════════════════════
-const style=document.createElement('style');
-style.textContent='@keyframes rpl{to{transform:translate(-50%,-50%) scale(3.5);opacity:0;}}';
-document.head.appendChild(style);
 </script>
 </body>
 </html>

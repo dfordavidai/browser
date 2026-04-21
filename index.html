@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -112,7 +111,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
 /* Screenshot */
 #view-wrap{flex:1;position:relative;overflow:hidden;display:none;background:#1a1a2e;}
 #view-img{width:100%;height:auto;display:block;cursor:crosshair;transform-origin:top left;}
-#cursor-ring{position:absolute;width:22px;height:22px;border-radius:50%;border:2px solid var(--accent);background:rgba(59,130,246,.1);pointer-events:none;transform:translate(-50%,-50%);display:none;z-index:80;transition:left .04s,top .04s;}
+#cursor-ring{position:absolute;width:20px;height:20px;border-radius:50%;border:2px solid var(--accent);background:rgba(59,130,246,.08);pointer-events:none;transform:translate(-50%,-50%);display:none;z-index:80;}
 
 /* Load overlay */
 #load-ov{position:absolute;inset:0;background:rgba(12,13,18,.8);backdrop-filter:blur(6px);display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:160;}
@@ -606,9 +605,20 @@ async function api(ep, body){
   return r.json();
 }
 
-function applyRes(d){
-  if(d.screenshot){ viewImg.src='data:image/jpeg;base64,'+d.screenshot; showPage(); loadOv.classList.remove('show'); errPg.classList.remove('show'); }
-  if(d.url){ omni.value=d.url; lastUrl=d.url; setLock(d.url); const tab=tabObj(); if(tab){tab.url=d.url;tab.home=false;} updateBkIcon(d.url); addHist(d.title||d.url,d.url); }
+function applyRes(d, silent=false){
+  if(d.screenshot){
+    viewImg.src='data:image/jpeg;base64,'+d.screenshot;
+    showPage();
+    loadOv.classList.remove('show');
+    errPg.classList.remove('show');
+  }
+  if(d.url){
+    const urlChanged = d.url !== lastUrl;
+    omni.value=d.url; lastUrl=d.url; setLock(d.url);
+    const tab=tabObj(); if(tab){tab.url=d.url;tab.home=false;}
+    updateBkIcon(d.url);
+    addHist(d.title||d.url,d.url);
+  }
   if(d.title){ const tab=tabObj(); if(tab){tab.title=d.title.length>24?d.title.slice(0,24)+'…':d.title;tab.fav='🌐';} document.title=d.title+' — Dave Browser'; }
   canBack=!!d.canGoBack; canFwd=!!d.canGoForward;
   $('btn-back').disabled=!canBack; $('btn-fwd').disabled=!canFwd;
@@ -622,8 +632,9 @@ function showHome(){ viewWrap.style.display='none'; home.style.display='flex'; o
 async function go(raw){
   if(!raw||!raw.trim()) return;
   if(!BACKEND){ cfg.style.display='flex'; cfgIn.focus(); return; }
+  exitTyping();
   showPage(); errPg.classList.remove('show');
-  loadOv.classList.add('show'); loadTxt.textContent='Connecting…';
+  loadOv.classList.add('show'); loadTxt.textContent='Loading…';
   setStatus('loading','Loading…'); startProg();
   $('btn-ref').classList.add('spin');
   try{
@@ -643,25 +654,67 @@ viewImg.addEventListener('click', async e=>{
   const rect=viewImg.getBoundingClientRect();
   const x=(e.clientX-rect.left)*(1440/rect.width);
   const y=(e.clientY-rect.top)*(900/rect.height);
+
+  // Enter typing mode
   typing=true; typingBar.classList.add('show'); viewImg.style.cursor='text';
-  // ripple
+
+  // Ripple only — no full blocking overlay for clicks
   const r=document.createElement('div');
-  r.style.cssText=`position:absolute;width:18px;height:18px;border-radius:50%;background:rgba(59,130,246,.35);pointer-events:none;transform:translate(-50%,-50%) scale(0);animation:rpl .4s ease-out forwards;left:${e.clientX-rect.left}px;top:${e.clientY-rect.top}px;z-index:90;`;
-  viewWrap.appendChild(r); setTimeout(()=>r.remove(),450);
-  loadOv.classList.add('show'); loadTxt.textContent='Clicking…'; startProg(); setStatus('loading','');
-  try{ const d=await api('/api/click',{x:Math.round(x),y:Math.round(y)}); applyRes(d); endProg(); setStatus('ok',d.url||lastUrl); }
-  catch(err){ endProg(); loadOv.classList.remove('show'); setStatus('err',err.message); }
+  r.style.cssText=`position:absolute;width:18px;height:18px;border-radius:50%;background:rgba(59,130,246,.4);pointer-events:none;transform:translate(-50%,-50%) scale(0);animation:rpl .35s ease-out forwards;left:${e.clientX-rect.left}px;top:${e.clientY-rect.top}px;z-index:90;`;
+  viewWrap.appendChild(r); setTimeout(()=>r.remove(),400);
+
+  // Dim the image slightly to signal "processing" — not a full overlay
+  viewImg.style.opacity='0.85';
+  setStatus('loading','');
+  startProg();
+
+  try{
+    const d=await api('/api/click',{x:Math.round(x),y:Math.round(y)});
+    applyRes(d); endProg(); setStatus('ok',d.url||lastUrl);
+  }catch(err){
+    endProg(); setStatus('err',err.message);
+  }finally{
+    viewImg.style.opacity='1';
+  }
 });
 
-// cursor
+// cursor — no transition, raw position
 viewWrap.addEventListener('mousemove', e=>{
-  const rect=viewImg.getBoundingClientRect();
-  cursorRing.style.left=(e.clientX-rect.left)+'px'; cursorRing.style.top=(e.clientY-rect.top)+'px';
+  const rect=viewWrap.getBoundingClientRect();
+  cursorRing.style.left=(e.clientX-rect.left)+'px';
+  cursorRing.style.top=(e.clientY-rect.top)+'px';
   cursorRing.style.display='block';
 });
 viewWrap.addEventListener('mouseleave',()=>cursorRing.style.display='none');
 
-// ═══ KEYBOARD ═════════════════════════════════════════════════════════════════
+// ═══ KEYBOARD — QUEUE BASED ═══════════════════════════════════════════════════
+// Instead of one API call per keystroke, we batch rapid typing into chunks
+let typeQueue=[], typeFlushing=false, typeTimer=null;
+
+async function flushTypeQueue(){
+  if(typeFlushing||!typeQueue.length) return;
+  typeFlushing=true;
+  const batch=typeQueue.splice(0,typeQueue.length);
+  try{
+    let d;
+    for(const item of batch){
+      d=await api('/api/type', item);
+    }
+    if(d) applyRes(d);
+  }catch(err){ setStatus('err',err.message); }
+  typeFlushing=false;
+  // If more queued while we were flushing, flush again
+  if(typeQueue.length) flushTypeQueue();
+}
+
+function queueKey(item){
+  typeQueue.push(item);
+  clearTimeout(typeTimer);
+  // Flush immediately for Enter/special keys, batch regular chars
+  if(item.key){ flushTypeQueue(); }
+  else{ typeTimer=setTimeout(flushTypeQueue, 80); }
+}
+
 document.addEventListener('keydown', async e=>{
   const active=document.activeElement;
   const inInput=active===omni||active===$('h-search')||active===cfgIn||active===findInp||active===$('s-backend')||active===$('cfg-in');
@@ -687,18 +740,24 @@ document.addEventListener('keydown', async e=>{
   if(e.key==='Escape'){exitTyping();return;}
   const specials=['Enter','Backspace','Tab','Delete','ArrowLeft','ArrowRight','ArrowUp','ArrowDown','Home','End','PageUp','PageDown'];
   const key=specials.includes(e.key)?e.key:null;
-  const text=(!key&&e.key.length===1)?e.key:null;
+  const text=(!key&&!e.ctrlKey&&!e.metaKey&&!e.altKey&&e.key.length===1)?e.key:null;
   if(!key&&!text) return;
-  try{ const d=await api('/api/type',key?{key}:{text}); if(d)applyRes(d); }
-  catch(err){ setStatus('err',err.message); }
+  queueKey(key?{key}:{text});
 });
-function exitTyping(){ typing=false; typingBar.classList.remove('show'); viewImg.style.cursor='crosshair'; }
+function exitTyping(){ typing=false; typingBar.classList.remove('show'); viewImg.style.cursor='crosshair'; typeQueue=[]; }
 
-// ═══ SCROLL ════════════════════════════════════════════════════════════════════
-viewWrap.addEventListener('wheel', async e=>{
+// ═══ SCROLL — THROTTLED ════════════════════════════════════════════════════════
+let scrollPending=false, scrollAccum=0;
+viewWrap.addEventListener('wheel', e=>{
   e.preventDefault(); if(!BACKEND) return;
-  try{ const d=await api('/api/scroll',{deltaY:e.deltaY}); if(d.screenshot) viewImg.src='data:image/jpeg;base64,'+d.screenshot; }
-  catch{}
+  scrollAccum+=e.deltaY;
+  if(scrollPending) return;
+  scrollPending=true;
+  setTimeout(async()=>{
+    const dy=scrollAccum; scrollAccum=0; scrollPending=false;
+    try{ const d=await api('/api/scroll',{deltaY:dy}); if(d.screenshot) viewImg.src='data:image/jpeg;base64,'+d.screenshot; }
+    catch{}
+  },50);
 },{passive:false});
 
 // ═══ NAV BUTTONS ══════════════════════════════════════════════════════════════

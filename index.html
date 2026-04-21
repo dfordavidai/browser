@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -109,8 +110,8 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
 #progress{height:3px;background:linear-gradient(90deg,var(--accent),#818cf8,#a78bfa);width:0%;opacity:0;transition:width .18s ease,opacity .35s;position:absolute;top:0;left:0;right:0;z-index:200;box-shadow:0 0 10px rgba(59,130,246,.6);}
 
 /* Screenshot */
-#view-wrap{flex:1;position:relative;overflow:hidden;display:none;background:#fff;}
-#view-img{width:100%;height:100%;object-fit:contain;object-position:top left;display:block;cursor:crosshair;transform-origin:top left;}
+#view-wrap{flex:1;position:relative;overflow:hidden;display:none;background:#1a1a2e;}
+#view-img{width:100%;height:auto;display:block;cursor:crosshair;transform-origin:top left;}
 #cursor-ring{position:absolute;width:22px;height:22px;border-radius:50%;border:2px solid var(--accent);background:rgba(59,130,246,.1);pointer-events:none;transform:translate(-50%,-50%);display:none;z-index:80;transition:left .04s,top .04s;}
 
 /* Load overlay */
@@ -275,11 +276,7 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
     Dave Browser
   </div>
   <div class="tb-spacer"></div>
-  <div id="tb-right">
-    <button class="tb-btn" id="tb-bkbar" title="Bookmarks Bar">📑</button>
-    <button class="tb-btn" id="tb-shot" title="Take Screenshot">📷</button>
-    <button class="tb-btn" id="tb-fs" title="Fullscreen">⛶</button>
-  </div>
+  <div id="tb-right"></div>
 </div>
 
 <!-- Tab Bar -->
@@ -421,9 +418,20 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);disp
       <button class="s-btn" id="s-backend-save">Save & Reconnect</button>
     </div>
     <div class="s-group">
+      <div class="s-group-title">Tools</div>
+      <div class="s-row" id="tb-shot" style="cursor:pointer;">
+        <div class="s-row-ico">📷</div>
+        <div class="s-row-info"><div class="s-row-label">Take Screenshot</div><div class="s-row-desc">Save current page as JPEG</div></div>
+      </div>
+      <div class="s-row" id="tb-fs" style="cursor:pointer;">
+        <div class="s-row-ico">⛶</div>
+        <div class="s-row-info"><div class="s-row-label">Fullscreen</div><div class="s-row-desc">Toggle fullscreen mode</div></div>
+      </div>
+    </div>
+    <div class="s-group">
       <div class="s-group-title">Appearance</div>
       <div class="s-row">
-        <div class="s-row-ico">📑</div>
+        <div class="s-row-ico">🔖</div>
         <div class="s-row-info"><div class="s-row-label">Bookmarks Bar</div><div class="s-row-desc">Show below navigation</div></div>
         <div class="toggle" id="tog-bk"><div class="toggle-k"></div></div>
       </div>
@@ -633,8 +641,8 @@ async function go(raw){
 viewImg.addEventListener('click', async e=>{
   if(!BACKEND) return;
   const rect=viewImg.getBoundingClientRect();
-  const x=(e.clientX-rect.left)*(1280/rect.width);
-  const y=(e.clientY-rect.top)*(800/rect.height);
+  const x=(e.clientX-rect.left)*(1440/rect.width);
+  const y=(e.clientY-rect.top)*(900/rect.height);
   typing=true; typingBar.classList.add('show'); viewImg.style.cursor='text';
   // ripple
   const r=document.createElement('div');
@@ -841,7 +849,7 @@ function setupTog(id,key,onFn,offFn){
   else{ if(el.classList.contains('on'))onFn(); else offFn(); }
   el.onclick=()=>{ el.classList.toggle('on'); const on=el.classList.contains('on'); localStorage.setItem(key,on?'1':'0'); on?onFn():offFn(); };
 }
-$('tb-bkbar').onclick=()=>$('tog-bk').click();
+// bookmarks bar toggle is only in settings now
 
 // ═══ FIND ═════════════════════════════════════════════════════════════════════
 function toggleFind(){ const s=findBar.classList.contains('show'); if(s){findBar.classList.remove('show');findInp.value='';}else{findBar.classList.add('show');findInp.focus();} }
@@ -850,14 +858,15 @@ $('find-prev').onclick=()=>toast('Use Ctrl+F then ↑↓ to navigate matches');
 $('find-next').onclick=()=>toast('Use Ctrl+F then ↑↓ to navigate matches');
 
 // ═══ SCREENSHOT ═══════════════════════════════════════════════════════════════
-$('tb-shot').onclick=async()=>{
+$('tb-shot').onclick=async(e)=>{
+  e.stopPropagation();
   if(!BACKEND||!lastUrl){toast('Navigate to a page first');return;}
   try{ const d=await api('/api/screenshot',{}); if(d.screenshot){ const a=document.createElement('a'); a.href='data:image/jpeg;base64,'+d.screenshot; a.download='dave-'+Date.now()+'.jpg'; a.click(); toast('📷 Screenshot saved'); } }
-  catch(e){toast('Error: '+e.message);}
+  catch(e2){toast('Error: '+e2.message);}
 };
 
 // ═══ FULLSCREEN ═══════════════════════════════════════════════════════════════
-$('tb-fs').onclick=()=>{ if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{}); else document.exitFullscreen(); };
+$('tb-fs').onclick=(e)=>{ e.stopPropagation(); if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{}); else document.exitFullscreen(); };
 
 // ═══ CONTEXT MENU ═════════════════════════════════════════════════════════════
 viewWrap.addEventListener('contextmenu', e=>{
